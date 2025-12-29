@@ -1,0 +1,80 @@
+HTML
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Universal Unit Converter</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background-color: #f4f4f9; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; }
+        h2 { color: #333; text-align: center; }
+        select, input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .result { background: #e7f3ff; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; color: #007bff; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Unit Converter</h2>
+    
+    <label>Category</label>
+    <select id="category" onchange="updateUnits()">
+        <option value="length">Length (Miles ↔ Km)</option>
+        <option value="weight">Weight (Lbs ↔ Kg)</option>
+        <option value="temp">Temp (Fahrenheit ↔ Celsius)</option>
+    </select>
+
+    <label>From</label>
+    <input type="number" id="inputVal" placeholder="Enter value" oninput="convert()">
+    
+    <select id="unitType" onchange="convert()">
+        </select>
+
+    <div class="result" id="output">Result: --</div>
+</div>
+
+<script>
+    const unitMap = {
+        length: { label1: "Miles to Kilometers", label2: "Kilometers to Miles" },
+        weight: { label1: "Pounds to Kilograms", label2: "Kilograms to Pounds" },
+        temp: { label1: "Fahrenheit to Celsius", label2: "Celsius to Fahrenheit" }
+    };
+
+    function updateUnits() {
+        const cat = document.getElementById('category').value;
+        const unitType = document.getElementById('unitType');
+        unitType.innerHTML = `
+            <option value="toMetric">${unitMap[cat].label1}</option>
+            <option value="toImperial">${unitMap[cat].label2}</option>
+        `;
+        convert();
+    }
+
+    function convert() {
+        const val = parseFloat(document.getElementById('inputVal').value);
+        const cat = document.getElementById('category').value;
+        const type = document.getElementById('unitType').value;
+        const output = document.getElementById('output');
+
+        if (isNaN(val)) { output.innerText = "Enter a number"; return; }
+
+        let res, unitName;
+        if (cat === 'length') {
+            res = (type === 'toMetric') ? val * 1.60934 : val / 1.60934;
+            unitName = (type === 'toMetric') ? "km" : "miles";
+        } else if (cat === 'weight') {
+            res = (type === 'toMetric') ? val * 0.453592 : val / 0.453592;
+            unitName = (type === 'toMetric') ? "kg" : "lbs";
+        } else if (cat === 'temp') {
+            res = (type === 'toMetric') ? (val - 32) * 5/9 : (val * 9/5) + 32;
+            unitName = (type === 'toMetric') ? "°C" : "°F";
+        }
+
+        output.innerText = `Result: ${res.toFixed(2)} ${unitName}`;
+    }
+
+    updateUnits(); // Initialize
+</script>
+
+</body>
+</html>
